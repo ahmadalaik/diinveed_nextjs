@@ -8,5 +8,7 @@ model Template {
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
 
+    invitations Invitation[]
+
     @@map("templates")
 }
