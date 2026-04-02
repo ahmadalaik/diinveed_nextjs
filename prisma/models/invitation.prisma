@@ -19,10 +19,11 @@ model Invitation {
     createdAt        DateTime @default(now())
     updatedAt        DateTime @updatedAt
 
-    user     User      @relation(fields: [userId], references: [id])
-    template Template? @relation(fields: [templateId], references: [id])
-    events   Event[]
-    stories  Story[]
+    user      User      @relation(fields: [userId], references: [id])
+    template  Template? @relation(fields: [templateId], references: [id])
+    events    Event[]
+    stories   Story[]
+    galleries Gallery[]
 
     @@index([templateId])
     @@map("invitations")
