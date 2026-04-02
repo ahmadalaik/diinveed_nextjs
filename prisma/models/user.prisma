@@ -12,7 +12,8 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    sessions Session[]
+    invitation Invitation?
+    sessions   Session[]
 
     @@map("users")
 }
