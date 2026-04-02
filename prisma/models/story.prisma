@@ -1,0 +1,14 @@
+model Story {
+    id           String   @id @default(uuid())
+    invitationId String
+    title        String
+    date         DateTime
+    description  String   @db.Text
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    invitation Invitation @relation(fields: [invitationId], references: [id])
+
+    @@index([invitationId])
+    @@map("stories")
+}
