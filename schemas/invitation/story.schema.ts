@@ -11,4 +11,4 @@ export const storySchema = z.object({
   order: z.number(),
 });
 
-export type StorySchemaType = z.infer<typeof storySchema>;
+export type StoryType = z.infer<typeof storySchema>;
