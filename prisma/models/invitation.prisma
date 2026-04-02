@@ -24,6 +24,7 @@ model Invitation {
     events    Event[]
     stories   Story[]
     galleries Gallery[]
+    gifts     Gift[]
 
     @@index([templateId])
     @@map("invitations")
