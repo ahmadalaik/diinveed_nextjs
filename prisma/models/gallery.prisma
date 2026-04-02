@@ -3,6 +3,7 @@ model Gallery {
     invitationId String
     imageUrl     String
     imageUrlId   String
+    order        Int
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
 
