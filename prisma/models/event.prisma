@@ -5,6 +5,7 @@ model Event {
     date         DateTime
     startTime    DateTime
     endTime      DateTime
+    address      String
     order        Int
     createdAt    DateTime @default(now())
     updatedAt    DateTime @updatedAt
