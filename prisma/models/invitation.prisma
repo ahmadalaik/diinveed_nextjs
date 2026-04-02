@@ -21,6 +21,8 @@ model Invitation {
 
     user     User      @relation(fields: [userId], references: [id])
     template Template? @relation(fields: [templateId], references: [id])
+    events   Event[]
 
+    @@index([templateId])
     @@map("invitations")
 }
