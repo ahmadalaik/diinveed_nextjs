@@ -11,4 +11,9 @@ export const storySchema = z.object({
   order: z.number(),
 });
 
+export const storiesFormSchema = z.object({
+  stories: z.array(storySchema).min(1, "At least one story is required"),
+});
+
 export type StoryType = z.infer<typeof storySchema>;
+export type StoriesFormType = z.infer<typeof storiesFormSchema>;
