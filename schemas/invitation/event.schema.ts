@@ -10,4 +10,9 @@ export const eventSchema = z.object({
   order: z.int(),
 });
 
+export const eventsFormSchema = z.object({
+  events: z.array(eventSchema).min(1, "At least one event is required"),
+});
+
 export type EventType = z.infer<typeof eventSchema>;
+export type EventsFormType = z.infer<typeof eventsFormSchema>;
