@@ -14,4 +14,9 @@ export const giftSchema = z.object({
   order: z.number(),
 });
 
+export const giftsFormSchema = z.object({
+  gifts: z.array(giftSchema).min(1, "At least one gift is required"),
+});
+
 export type GiftType = z.infer<typeof giftSchema>;
+export type GiftsFormType = z.infer<typeof giftsFormSchema>;
