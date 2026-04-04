@@ -30,35 +30,30 @@ export default function RegisterForm() {
   const { isSubmitting } = formState;
 
   const onSubmit = async (data: RegisterType) => {
-    try {
-      const result = await registerAction(data);
+    const result = await registerAction(data);
 
-      // Handle error response
-      if (result?.errors) {
-        if (result.errors._form) {
-          toast.error(result.errors._form[0]);
+    // Handle error response
+    if (result?.errors) {
+      if (result.errors._form) {
+        toast.error(result.errors._form[0]);
+      }
+
+      Object.keys(result.errors).forEach((key) => {
+        const field = key as keyof RegisterType;
+        if (result.errors?.[field]) {
+          setError(field, {
+            type: "server",
+            message: result.errors[field]?.[0],
+          });
         }
+      });
+      return;
+    }
 
-        Object.keys(result.errors).forEach((key) => {
-          const field = key as keyof RegisterType;
-          if (result.errors?.[field]) {
-            setError(field, {
-              type: "server",
-              message: result.errors[field]?.[0],
-            });
-          }
-        });
-        return;
-      }
-
-      // Handle success response
-      if (result?.success) {
-        toast.success("Account created successfully!");
-        router.push("/login");
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      toast.error("Something went wrong. Please try again.");
+    // Handle success response
+    if (result?.success) {
+      toast.success("Account created successfully!");
+      router.push("/login");
     }
   };
 
@@ -149,7 +144,6 @@ export default function RegisterForm() {
                         placeholder="Enter your password"
                         autoComplete="new-password"
                         disabled={isSubmitting}
-                        className="relative"
                       />
                       <Button
                         type="button"
@@ -170,7 +164,7 @@ export default function RegisterForm() {
               />
             </FieldGroup>
 
-            <Button className="mt-4 w-full" type="submit" disabled={isSubmitting}>
+            <Button className="w-full mt-4" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

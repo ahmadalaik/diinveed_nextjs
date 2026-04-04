@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { registerSchema, RegisterType } from "@/schemas/auth/register.schema";
 import { prisma } from "@/lib/prisma";
 
-export type RegisterActionResponse = {
+type RegisterActionResponse = {
   success?: boolean;
   errors?: {
     name?: string[];
@@ -47,14 +47,17 @@ export async function registerAction(data: RegisterType): Promise<RegisterAction
       },
     });
 
-    return { success: true };
+    return {
+      success: true,
+    };
   } catch (error: unknown) {
     console.error("Registration Error:", error);
 
     // error instance of standard Error
     if (error instanceof Error) {
       return {
-        errors: { _form: [error.message] },
+        // errors: { _form: [error.message] },
+        errors: { _form: ["Something went wrong, please try again"] },
       };
     }
 
