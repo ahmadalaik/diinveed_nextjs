@@ -1,5 +1,5 @@
 model Gift {
-    id            String   @id @default(uuid())
+    id            String   @id @default(cuid())
     invitationId  String
     provider      String
     accountName   String

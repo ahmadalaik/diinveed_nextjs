@@ -1,5 +1,5 @@
 model Invitation {
-    id                 String   @id @default(uuid())
+    id                 String   @id @default(cuid())
     userId             String   @unique
     templateId         String?
     slug               String

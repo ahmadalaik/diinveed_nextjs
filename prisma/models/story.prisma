@@ -1,5 +1,5 @@
 model Story {
-    id           String   @id @default(uuid())
+    id           String   @id @default(cuid())
     invitationId String
     title        String
     date         DateTime
