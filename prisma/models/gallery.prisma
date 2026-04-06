@@ -1,14 +1,14 @@
 model Gallery {
-    id           String   @id @default(uuid())
-    invitationId String
-    imageUrl     String
-    imageUrlId   String
-    order        Int
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
+    id            String   @id @default(uuid())
+    invitationId  String
+    imageUrl      String
+    imagePublicId String
+    order         Int
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
 
     invitation Invitation @relation(fields: [invitationId], references: [id])
 
-    @@index([invitationId])
+    @@index([invitationId, imagePublicId])
     @@map("galleries")
 }

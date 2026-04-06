@@ -20,12 +20,12 @@ CREATE TABLE `galleries` (
     `id` VARCHAR(191) NOT NULL,
     `invitationId` VARCHAR(191) NOT NULL,
     `imageUrl` VARCHAR(191) NOT NULL,
-    `imageUrlId` VARCHAR(191) NOT NULL,
+    `imagePublicId` VARCHAR(191) NOT NULL,
     `order` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
-    INDEX `galleries_invitationId_idx`(`invitationId`),
+    INDEX `galleries_invitationId_imagePublicId_idx`(`invitationId`, `imagePublicId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -56,19 +56,20 @@ CREATE TABLE `invitations` (
     `motherBrideName` VARCHAR(191) NOT NULL,
     `brideDescription` VARCHAR(191) NULL,
     `bridePhotoUrl` VARCHAR(191) NULL,
+    `bridePhotoPublicId` VARCHAR(191) NULL,
     `groomName` VARCHAR(191) NOT NULL,
     `groomNickname` VARCHAR(191) NOT NULL,
     `fatherGroomName` VARCHAR(191) NOT NULL,
     `motherGroomName` VARCHAR(191) NOT NULL,
     `groomDescription` VARCHAR(191) NULL,
     `groomPhotoUrl` VARCHAR(191) NULL,
+    `groomPhotoPublicId` VARCHAR(191) NULL,
     `isPublished` BOOLEAN NOT NULL DEFAULT false,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `invitations_userId_key`(`userId`),
-    UNIQUE INDEX `invitations_slug_key`(`slug`),
-    INDEX `invitations_templateId_idx`(`templateId`),
+    INDEX `invitations_templateId_slug_bridePhotoPublicId_groomPhotoPub_idx`(`templateId`, `slug`, `bridePhotoPublicId`, `groomPhotoPublicId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
