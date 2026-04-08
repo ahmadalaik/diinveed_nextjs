@@ -1,3 +1,5 @@
+"use client";
+
 import { ImageCropper } from "@/components/image-cropper";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -10,12 +12,7 @@ interface PhotoCropperProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export default function PhotoCropper({
-  onFileSelected,
-  imageUrl,
-  className,
-  ...props
-}: PhotoCropperProps) {
+export default function PhotoCropper({ onFileSelected, imageUrl, className, ...props }: PhotoCropperProps) {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,4 +76,3 @@ export default function PhotoCropper({
     </div>
   );
 }
-
