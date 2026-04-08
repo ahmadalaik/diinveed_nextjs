@@ -22,7 +22,7 @@ const navsMain = [
     url: "#",
     icon: Mail,
     items: [
-      { title: "Overview", url: "/dashboard/invitations" },
+      { title: "Overview", url: "/dashboard/invitation" },
       { title: "Couple", url: "/dashboard/invitation/couple" },
       { title: "Event", url: "/dashboard/invitation/event" },
       { title: "Story", url: "/dashboard/invitation/story" },
