@@ -6,39 +6,37 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import PhotoCropper from "./photo-cropper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { InvitationInfoType } from "@/schemas/invitation/invitation.schema";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { uploadToCloudinaryClient } from "@/lib/cloudinary/upload";
 import { useState } from "react";
-import { coupleFormSchema, CoupleFormType } from "@/schemas/invitation/couple.schema";
+import { uploadToCloudinaryClient } from "@/lib/cloudinary/upload";
+import { useRouter } from "next/navigation";
 import { deleteFromCloudinaryClient } from "@/lib/cloudinary/delete";
+import { coupleFormSchema, CoupleFormType } from "@/schemas/invitation/couple.schema";
 import { upsertCoupleAction } from "@/app/actions/invitation/couple";
 
-const defaultCoupleValues = {
-  brideName: "",
-  brideNickname: "",
-  fatherBrideName: "",
-  motherBrideName: "",
-  groomName: "",
-  groomNickname: "",
-  fatherGroomName: "",
-  motherGroomName: "",
-};
-
-export default function CoupleCreateForm() {
+export default function CoupleEditForm({ invitation }: { invitation: InvitationInfoType }) {
   const router = useRouter();
 
   const [bridePhotoFile, setBridePhotoFile] = useState<File | null>(null);
-  const [bridePhotoPreview, setBridePhotoPreview] = useState<string | undefined>(undefined);
+  const [bridePhotoPreview, setBridePhotoPreview] = useState<string | null>(invitation.bridePhotoUrl);
   const [groomPhotoFile, setGroomPhotoFile] = useState<File | null>(null);
-  const [groomPhotoPreview, setGroomPhotoPreview] = useState<string | undefined>(undefined);
+  const [groomPhotoPreview, setGroomPhotoPreview] = useState<string | null>(invitation.groomPhotoUrl);
 
   const form = useForm<CoupleFormType>({
     resolver: zodResolver(coupleFormSchema),
-    defaultValues: defaultCoupleValues,
+    values: {
+      ...invitation,
+      brideDescription: invitation.brideDescription ?? "",
+      bridePhotoUrl: invitation.bridePhotoUrl ?? undefined,
+      bridePhotoPublicId: invitation.bridePhotoPublicId ?? undefined,
+      groomDescription: invitation.groomDescription ?? "",
+      groomPhotoUrl: invitation.groomPhotoUrl ?? undefined,
+      groomPhotoPublicId: invitation.groomPhotoPublicId ?? undefined,
+    },
   });
 
   const {
@@ -61,12 +59,20 @@ export default function CoupleCreateForm() {
         const result = await uploadToCloudinaryClient(bridePhotoFile, folderPath);
         bridePhotoUrl = result.secure_url;
         bridePhotoPublicId = result.public_id;
+
+        if (bridePhotoPublicId && invitation.bridePhotoPublicId) {
+          await deleteFromCloudinaryClient(invitation.bridePhotoPublicId);
+        }
       }
 
       if (groomPhotoFile) {
         const result = await uploadToCloudinaryClient(groomPhotoFile, folderPath);
         groomPhotoUrl = result.secure_url;
         groomPhotoPublicId = result.public_id;
+
+        if (groomPhotoPublicId && invitation.groomPhotoPublicId) {
+          await deleteFromCloudinaryClient(invitation.groomPhotoPublicId);
+        }
       }
     } catch {
       if (bridePhotoPublicId) await deleteFromCloudinaryClient(bridePhotoPublicId);
@@ -102,7 +108,7 @@ export default function CoupleCreateForm() {
     }
 
     if (result.success) {
-      toast.success("Couple information created successfully!");
+      toast.success("Couple information updated successfully!");
       router.push("/dashboard/invitation");
     }
   };
@@ -119,7 +125,7 @@ export default function CoupleCreateForm() {
           <CardContent className="grid gap-6">
             <FieldGroup className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
               <PhotoCropper
-                imageUrl={bridePhotoPreview}
+                imageUrl={bridePhotoPreview ?? undefined}
                 onFileSelected={(file) => {
                   setBridePhotoFile(file);
                   setBridePhotoPreview(URL.createObjectURL(file));
@@ -231,7 +237,7 @@ export default function CoupleCreateForm() {
           <CardContent className="grid gap-6">
             <FieldGroup className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
               <PhotoCropper
-                imageUrl={groomPhotoPreview}
+                imageUrl={groomPhotoPreview ?? undefined}
                 onFileSelected={(file) => {
                   setGroomPhotoFile(file);
                   setGroomPhotoPreview(URL.createObjectURL(file));
