@@ -8,7 +8,11 @@ export default async function InvitationEventPage() {
   const user = await authIsRequired();
   const invitation = await prisma.invitation.findUnique({
     where: { userId: user.id },
-    include: { events: true },
+    include: {
+      events: {
+        orderBy: { order: "asc" },
+      },
+    },
   });
 
   const events = invitation?.events.map((event) => ({
