@@ -8,8 +8,6 @@ import PhotoCropper from "./photo-cropper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InvitationInfoType } from "@/schemas/invitation/invitation.schema";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Loader2Icon, SaveIcon } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { uploadToCloudinaryClient } from "@/lib/cloudinary/upload";
@@ -17,6 +15,7 @@ import { useRouter } from "next/navigation";
 import { deleteFromCloudinaryClient } from "@/lib/cloudinary/delete";
 import { coupleFormSchema, CoupleFormType } from "@/schemas/invitation/couple.schema";
 import { upsertCoupleAction } from "@/app/actions/invitation/couple";
+import ButtonForm from "./button-form";
 
 export default function CoupleEditForm({ invitation }: { invitation: InvitationInfoType }) {
   const router = useRouter();
@@ -123,28 +122,30 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
           </CardHeader>
 
           <CardContent className="grid gap-6">
-            <FieldGroup className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
+            <FieldGroup className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 sm:gap-6 place-items-center">
               <PhotoCropper
                 imageUrl={bridePhotoPreview ?? undefined}
                 onFileSelected={(file) => {
                   setBridePhotoFile(file);
                   setBridePhotoPreview(URL.createObjectURL(file));
                 }}
+                isDisabled={isSubmitting}
               />
 
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 sm:pt-0">
                 <Controller
                   name="brideName"
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="col-span-1">
-                      <FieldLabel>Bride&apos;s Name</FieldLabel>
+                      <FieldLabel className="text-sm">Name</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="Jane Watson"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -155,14 +156,15 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                   name="brideNickname"
                   control={control}
                   render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Bride&apos;s Nickname</FieldLabel>
+                    <Field data-invalid={fieldState.invalid} className="col-span-1">
+                      <FieldLabel>Nickname</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="Jane"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -173,14 +175,15 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                   name="fatherBrideName"
                   control={control}
                   render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Bride Father&apos;s Name</FieldLabel>
+                    <Field data-invalid={fieldState.invalid} className="col-span-1">
+                      <FieldLabel>Father Name</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="Joko"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -191,14 +194,15 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                   name="motherBrideName"
                   control={control}
                   render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Bride Mother&apos;s Name</FieldLabel>
+                    <Field data-invalid={fieldState.invalid} className="col-span-1">
+                      <FieldLabel>Mother Name</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="Sri"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -210,7 +214,7 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                 name="brideDescription"
                 control={control}
                 render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid} className="col-span-2">
+                  <Field data-invalid={fieldState.invalid} className="col-span-1 md:col-span-2">
                     <FieldLabel>About</FieldLabel>
                     <Textarea
                       {...field}
@@ -219,6 +223,7 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                       placeholder="Second daughter of Mr.Joko and Mrs.Sri"
                       autoComplete="off"
                       disabled={isSubmitting}
+                      className="text-sm"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
@@ -235,28 +240,30 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
           </CardHeader>
 
           <CardContent className="grid gap-6">
-            <FieldGroup className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-6">
+            <FieldGroup className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 sm:gap-6 place-items-center">
               <PhotoCropper
                 imageUrl={groomPhotoPreview ?? undefined}
                 onFileSelected={(file) => {
                   setGroomPhotoFile(file);
                   setGroomPhotoPreview(URL.createObjectURL(file));
                 }}
+                isDisabled={isSubmitting}
               />
 
-              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FieldGroup className="grid grid-cols-1 md:grid-cols-2 pt-3 sm:pt-0">
                 <Controller
                   name="groomName"
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="col-span-1">
-                      <FieldLabel>Groom&apos;s Name</FieldLabel>
+                      <FieldLabel>Name</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="John Doe"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -268,13 +275,14 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Groom&apos;s Nickname</FieldLabel>
+                      <FieldLabel>Nickname</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="John"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -286,13 +294,14 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Groom Father&apos;s Name</FieldLabel>
+                      <FieldLabel>Father Name</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="Widodo"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -304,13 +313,14 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                   control={control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Groom Mother&apos;s Name</FieldLabel>
+                      <FieldLabel>Mother Name</FieldLabel>
                       <Input
                         {...field}
                         aria-invalid={fieldState.invalid}
                         placeholder="Mulyani"
                         autoComplete="off"
                         disabled={isSubmitting}
+                        className="text-sm"
                       />
                       {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                     </Field>
@@ -322,7 +332,7 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                 name="groomDescription"
                 control={control}
                 render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid} className="col-span-2">
+                  <Field data-invalid={fieldState.invalid} className="col-span-1 md:col-span-2">
                     <FieldLabel>About</FieldLabel>
                     <Textarea
                       {...field}
@@ -331,6 +341,7 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
                       placeholder="First son of Mr.Widodo and Mrs.Mulyani"
                       autoComplete="off"
                       disabled={isSubmitting}
+                      className="text-sm"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
@@ -339,21 +350,9 @@ export default function CoupleEditForm({ invitation }: { invitation: InvitationI
             </FieldGroup>
           </CardContent>
         </Card>
-
-        <Button className="w-full" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-              Please wait..
-            </>
-          ) : (
-            <>
-              <SaveIcon />
-              Save
-            </>
-          )}
-        </Button>
       </form>
+
+      <ButtonForm isDisabled={isSubmitting} />
     </div>
   );
 }

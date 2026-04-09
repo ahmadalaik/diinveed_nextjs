@@ -8,11 +8,18 @@ import { useEffect, useRef, useState, type ChangeEvent, type HTMLAttributes } fr
 
 interface PhotoCropperProps extends HTMLAttributes<HTMLDivElement> {
   onFileSelected: (file: File) => void;
+  isDisabled: boolean;
   imageUrl?: string;
   className?: string;
 }
 
-export default function PhotoCropper({ onFileSelected, imageUrl, className, ...props }: PhotoCropperProps) {
+export default function PhotoCropper({
+  onFileSelected,
+  isDisabled,
+  imageUrl,
+  className,
+  ...props
+}: PhotoCropperProps) {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -50,6 +57,7 @@ export default function PhotoCropper({ onFileSelected, imageUrl, className, ...p
         selectedFile={selectedFile}
         setSelectedFile={setSelectedFile}
         onCropImageComplete={handleCropImageComplete}
+        isDisabled={isDisabled}
       />
     );
   }
@@ -57,8 +65,11 @@ export default function PhotoCropper({ onFileSelected, imageUrl, className, ...p
   return (
     <div
       className={cn(
-        "flex h-40 w-40 items-center justify-center rounded-xl border-2 border-dashed bg-cover bg-center cursor-pointer hover:border-slate-500",
-        imageUrl && "border-solid",
+        "flex h-40 w-40 items-center justify-center rounded-xl bg-cover bg-center",
+        imageUrl
+          ? "ring-offset-2 ring-2 ring-slate-200 hover:ring-slate-400"
+          : "border-2 border-dashed border-slate-300 hover:border-slate-500",
+        isDisabled ? "cursor-not-allowed pointer-events-none" : "cursor-pointer pointer-events-auto",
         className,
       )}
       style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
@@ -72,6 +83,7 @@ export default function PhotoCropper({ onFileSelected, imageUrl, className, ...p
         accept="image/jpeg, image/jpg, image/png, image/webp"
         className="hidden"
         onChange={handlePhotoChange}
+        disabled={isDisabled}
       />
     </div>
   );
