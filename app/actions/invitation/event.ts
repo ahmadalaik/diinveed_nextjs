@@ -68,7 +68,6 @@ export async function createEventAction(payload: EventsFormType): Promise<EventA
   }
 
   try {
-    // discard id from fe and let db generate the id
     const eventsData = parsed.data.events.map(({ id: _, ...event }) => ({
       ...event,
       invitationId: invitation.id,
@@ -155,12 +154,12 @@ export async function updateEventAction(data: EventsFormType): Promise<EventActi
     await prisma.$transaction(
       eventsData.map(({ id, invitationId, ...event }) =>
         prisma.event.upsert({
-          where: { id, invitationId }, // checking id event
-          update: { ...event }, // if match (id retrieve from db) -> update
+          where: { id, invitationId },
+          update: { ...event },
           create: {
             ...event,
             invitationId,
-          },  // if didn't match (id retrieve from fe) -> create new
+          },
         }),
       ),
     );
