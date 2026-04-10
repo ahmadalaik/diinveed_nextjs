@@ -64,6 +64,7 @@ export async function createStoryAction(data: StoriesFormType): Promise<StoryAct
   }
 
   try {
+    // discard id from fe
     const storiesData = parsed.data.stories.map(({ id: _, ...story }) => ({
       ...story,
       invitationId: invitation.id,
@@ -148,12 +149,12 @@ export async function updateStoryAction(data: StoriesFormType): Promise<StoryAct
     await prisma.$transaction(
       storiesData.map(({ id, invitationId, ...story }) =>
         prisma.story.upsert({
-          where: { id, invitationId },
-          update: { ...story },
+          where: { id, invitationId }, // checking id event
+          update: { ...story }, // if match (id retrieve from db) -> update
           create: {
             ...story,
             invitationId,
-          },
+          }, // if didn't match (id retrieve from fe) -> create new
         }),
       ),
     );
