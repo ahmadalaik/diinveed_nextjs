@@ -50,9 +50,9 @@ export async function createStoryAction(data: StoriesFormType): Promise<StoryAct
           errorMap.set(index, { index, errors: {} });
         }
 
-        const eventError = errorMap.get(index);
-        if (eventError) {
-          eventError.errors[field] = flattenErrors[key as keyof typeof flattenErrors];
+        const storyError = errorMap.get(index);
+        if (storyError) {
+          storyError.errors[field] = flattenErrors[key as keyof typeof flattenErrors];
         }
       }
     });
@@ -103,6 +103,8 @@ export async function updateStoryAction(data: StoriesFormType): Promise<StoryAct
     return { success: false, errors: [{ _form: ["Invitation story not been created"] }] };
   }
 
+  console.log("stories payload: ", data);
+
   const parsed = storiesFormSchema.safeParse(data);
   if (!parsed.success) {
     const flattenErrors = parsed.error.flatten().fieldErrors;
@@ -127,9 +129,9 @@ export async function updateStoryAction(data: StoriesFormType): Promise<StoryAct
           errorMap.set(index, { index, errors: {} });
         }
 
-        const eventError = errorMap.get(index);
-        if (eventError) {
-          eventError.errors[field] = flattenErrors[key as keyof typeof flattenErrors];
+        const storyError = errorMap.get(index);
+        if (storyError) {
+          storyError.errors[field] = flattenErrors[key as keyof typeof flattenErrors];
         }
       }
     });
@@ -140,24 +142,39 @@ export async function updateStoryAction(data: StoriesFormType): Promise<StoryAct
     };
   }
 
-  try {
-    const storiesData = parsed.data.stories.map((story) => ({
-      ...story,
-      invitationId: invitation.id,
-    }));
+  console.log("stories parsed data: ", parsed.data.stories);
 
-    await prisma.$transaction(
-      storiesData.map(({ id, invitationId, ...story }) =>
-        prisma.story.upsert({
-          where: { id, invitationId }, // checking id event
-          update: { ...story }, // if match (id retrieve from db) -> update
+  try {
+    const activeIds = parsed.data.stories.map((s) => s.id);
+
+    await prisma.$transaction(async (tx) => {
+      // delete story that are NOT in activeIds list
+      await tx.story.deleteMany({
+        where: {
+          invitationId: invitation.id,
+          id: { notIn: activeIds },
+        },
+      });
+
+      const upserts = parsed.data.stories.map(({ id, ...story }) => {
+        return tx.story.upsert({
+          // checking id story and invitation id
+          where: {
+            id,
+            invitationId: invitation.id,
+          },
+          // if match (id story retrieve from db) -> update
+          update: { ...story },
+          // if didn't match (id story retrieve from fe) -> create new
           create: {
             ...story,
-            invitationId,
-          }, // if didn't match (id retrieve from fe) -> create new
-        }),
-      ),
-    );
+            invitationId: invitation.id,
+          },
+        });
+      });
+
+      await Promise.all(upserts);
+    });
 
     return { success: true };
   } catch (error) {
