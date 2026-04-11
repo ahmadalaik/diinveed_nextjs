@@ -10,10 +10,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { EventsFormType } from "@/schemas/invitation/event.schema";
 import { cn } from "@/lib/utils";
+import { TimePicker } from "./time-picker";
 
 interface EventCardProps {
   index: number;
@@ -67,7 +67,6 @@ export function EventCard(props: EventCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <FieldGroup className="grid grid-cols-1 md:grid-cols-4 gap-4">
-
           {/* Event Name */}
           <Controller
             name={`events.${index}.title`}
@@ -99,7 +98,8 @@ export function EventCard(props: EventCardProps) {
                       aria-invalid={fieldState.invalid}
                       type="button"
                       variant="outline"
-                      className="justify-between font-normal"
+                      data-empty={!field.value}
+                      className="justify-between font-normal data-[empty=true]:text-muted-foreground"
                       disabled={isSubmitting}
                     >
                       {field.value ? format(field.value, "PPP") : "Select date"}
@@ -111,6 +111,7 @@ export function EventCard(props: EventCardProps) {
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
                       captionLayout="dropdown"
+                      defaultMonth={field.value ? new Date(field.value) : new Date()}
                       onSelect={(date) => {
                         field.onChange(date?.toISOString());
                       }}
@@ -130,80 +131,12 @@ export function EventCard(props: EventCardProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="col-span-1">
                 <FieldLabel>Start Time</FieldLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      aria-invalid={fieldState.invalid}
-                      type="button"
-                      variant="outline"
-                      id="date-picker-optional"
-                      className="w-full justify-between font-normal"
-                      disabled={isSubmitting}
-                    >
-                      {field.value ? format(field.value, "HH:mm") : "Select time"}
-                      <ChevronDown />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto overflow-hidden p-0">
-                    <div className="flex flex-col sm:flex-row sm:h-75 divide-y sm:divide-y-0 sm:divide-x">
-                      <ScrollArea className="w-64 sm:w-auto">
-                        <div className="flex sm:flex-col p-2">
-                          {Array.from({ length: 24 }, (_, i) => i).map((hour) => {
-                            const currentDate = field.value ? new Date(field.value) : new Date();
-                            const newDate = new Date(currentDate);
-                            newDate.setHours(hour);
-
-                            return (
-                              <Button
-                                key={hour}
-                                type="button"
-                                size="icon"
-                                variant={
-                                  field.value && new Date(field.value).getHours() === hour ? "default" : "ghost"
-                                }
-                                className="w-full shrink-0 aspect-square"
-                                onClick={() => {
-                                  console.log("start time adalah: ", newDate.toISOString());
-                                  field.onChange(newDate.toISOString());
-                                }}
-                              >
-                                {hour.toString().padStart(2, "0")}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                        <ScrollBar orientation="horizontal" className="sm:hidden" />
-                      </ScrollArea>
-                      <ScrollArea className="w-64 sm:w-auto">
-                        <div className="flex sm:flex-col p-2">
-                          {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => {
-                            const currentDate = field.value ? new Date(field.value) : new Date();
-                            const newDate = new Date(currentDate);
-                            newDate.setMinutes(minute);
-
-                            return (
-                              <Button
-                                key={minute}
-                                type="button"
-                                size="icon"
-                                variant={
-                                  field.value && new Date(field.value).getMinutes() === minute
-                                    ? "default"
-                                    : "ghost"
-                                }
-                                className="w-full shrink-0 aspect-square"
-                                onClick={() => field.onChange(newDate.toISOString())}
-                              >
-                                {minute.toString().padStart(2, "0")}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                        <ScrollBar orientation="horizontal" className="sm:hidden" />
-                      </ScrollArea>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <TimePicker
+                  value={field.value}
+                  invalid={fieldState.invalid}
+                  onChange={field.onChange}
+                  isSubmitting={isSubmitting}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -216,76 +149,12 @@ export function EventCard(props: EventCardProps) {
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="col-span-1">
                 <FieldLabel>End Time</FieldLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      aria-invalid={fieldState.invalid}
-                      variant="outline"
-                      id="date-picker-optional"
-                      className="w-full justify-between font-normal"
-                      disabled={isSubmitting}
-                    >
-                      {field.value ? format(field.value, "HH:mm") : "Select time"}
-                      <ChevronDown />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto overflow-hidden p-0">
-                    <div className="flex flex-col sm:flex-row sm:h-75 divide-y sm:divide-y-0 sm:divide-x">
-                      <ScrollArea className="w-64 sm:w-auto">
-                        <div className="flex sm:flex-col p-2">
-                          {Array.from({ length: 24 }, (_, i) => i).map((hour) => {
-                            const currentDate = field.value ? new Date(field.value) : new Date();
-                            const newDate = new Date(currentDate);
-                            newDate.setHours(hour);
-
-                            return (
-                              <Button
-                                key={hour}
-                                type="button"
-                                size="icon"
-                                variant={
-                                  field.value && new Date(field.value).getHours() === hour ? "default" : "ghost"
-                                }
-                                className="w-full shrink-0 aspect-square"
-                                onClick={() => field.onChange(newDate.toISOString())}
-                              >
-                                {hour.toString().padStart(2, "0")}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                        <ScrollBar orientation="horizontal" className="sm:hidden" />
-                      </ScrollArea>
-                      <ScrollArea className="w-64 sm:w-auto">
-                        <div className="flex sm:flex-col p-2">
-                          {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => {
-                            const currentDate = field.value ? new Date(field.value) : new Date();
-                            const newDate = new Date(currentDate);
-                            newDate.setMinutes(minute);
-
-                            return (
-                              <Button
-                                key={minute}
-                                type="button"
-                                size="icon"
-                                variant={
-                                  field.value && new Date(field.value).getMinutes() === minute
-                                    ? "default"
-                                    : "ghost"
-                                }
-                                className="w-full shrink-0 aspect-square"
-                                onClick={() => field.onChange(newDate.toISOString())}
-                              >
-                                {minute.toString().padStart(2, "0")}
-                              </Button>
-                            );
-                          })}
-                        </div>
-                        <ScrollBar orientation="horizontal" className="sm:hidden" />
-                      </ScrollArea>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <TimePicker
+                  value={field.value}
+                  invalid={fieldState.invalid}
+                  onChange={field.onChange}
+                  isSubmitting={isSubmitting}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
