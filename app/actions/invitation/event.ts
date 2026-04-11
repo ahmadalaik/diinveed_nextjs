@@ -68,6 +68,7 @@ export async function createEventAction(payload: EventsFormType): Promise<EventA
   }
 
   try {
+    // discard id from fe
     const eventsData = parsed.data.events.map(({ id: _, ...event }) => ({
       ...event,
       invitationId: invitation.id,
@@ -145,24 +146,39 @@ export async function updateEventAction(data: EventsFormType): Promise<EventActi
     };
   }
 
-  try {
-    const eventsData = parsed.data.events.map((event) => ({
-      ...event,
-      invitationId: invitation.id,
-    }));
+  console.log("parsed data: ", parsed.data.events);
 
-    await prisma.$transaction(
-      eventsData.map(({ id, invitationId, ...event }) =>
-        prisma.event.upsert({
-          where: { id, invitationId },
+  try {
+    const activeIds = parsed.data.events.map((e) => e.id);
+
+    await prisma.$transaction(async (tx) => {
+      // delete event that are NOT in activeIds list
+      await tx.event.deleteMany({
+        where: {
+          invitationId: invitation.id,
+          id: { notIn: activeIds },
+        },
+      });
+
+      const upserts = parsed.data.events.map(({ id, ...event }) => {
+        return tx.event.upsert({
+          // checking id event and invitation id
+          where: {
+            id,
+            invitationId: invitation.id,
+          },
+          // if match (id event retrieve from db) -> update
           update: { ...event },
+          // if didn't match (id event retrieve from fe) -> create new
           create: {
             ...event,
-            invitationId,
+            invitationId: invitation.id,
           },
-        }),
-      ),
-    );
+        });
+      });
+
+      await Promise.all(upserts);
+    });
 
     return { success: true };
   } catch (error) {
