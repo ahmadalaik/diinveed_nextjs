@@ -6,7 +6,7 @@ import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { nanoid } from "nanoid";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FormProvider, Path, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { SortableStoryItem } from "./sortable-story-item";

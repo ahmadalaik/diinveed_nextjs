@@ -79,7 +79,8 @@ export function StoryCard(props: StoryCardProps) {
                       aria-invalid={fieldState.invalid}
                       type="button"
                       variant="outline"
-                      className="justify-between font-normal"
+                      data-empty={!field.value}
+                      className="justify-between font-normal data-[empty=true]:text-muted-foreground"
                       disabled={isSubmitting}
                     >
                       {field.value ? format(field.value, "PPP") : "Select date"}
@@ -91,6 +92,7 @@ export function StoryCard(props: StoryCardProps) {
                       mode="single"
                       selected={field.value ? new Date(field.value) : undefined}
                       captionLayout="dropdown"
+                      defaultMonth={field.value ? new Date(field.value) : new Date()}
                       onSelect={(date) => {
                         field.onChange(date?.toISOString());
                       }}
